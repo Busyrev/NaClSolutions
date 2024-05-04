@@ -24,8 +24,6 @@ async function main() {
         return evalResult;
     })
 
-    fs.writeFileSync('readme.md', markdown);
-
     let html = await MarkdownExporter.export(markdown, true);
     fs.writeFileSync('tmp/NaClSolutions.html', html);
     let pdf = await MarkdownExporter.export(markdown, false);

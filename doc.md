@@ -10,7 +10,7 @@ script:
 
 Версия: js: cfg.version;\js
 Дата генерации: js: formatDate(new Date());\js
-Актуальную версию этого документа вы можете взять: //TODO: ссылка на гихаб
+Актуальную версию этого документа вы можете взять: https://raw.githubusercontent.com/Busyrev/NaClSolutions/main/NaClSolutions.pdf
 Автор: Бусырев Михаил (https://t.me/aquahawk)
 Благодарность: Лично Гуменюк Ивану, Сергею Иванову, и чату https://t.me/ponics_ru
 Код генератора: https://github.com/Busyrev/NaClSolutions
