@@ -1,0 +1,22 @@
+{
+  "dependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/marked": "^4.0.0",
+    "@types/node": "^20.12.7",
+    "jest": "^29.7.0",
+    "md-to-pdf": "^5.2.4",
+    "rimraf": "^5.0.5",
+    "ts-jest": "^29.1.2"
+  },
+  "name": "naclsolutions",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "rebuild": "rimraf build && tsc",
+    "all": "rimraf build && tsc && node build/index.js",
+    "test": "jest"
+  },
+  "author": "Mike Busyrev",
+  "license": "ISC",
+  "description": ""
+}

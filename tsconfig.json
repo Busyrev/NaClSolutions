@@ -1,0 +1,25 @@
+{
+	"compilerOptions": {
+		"module": "commonjs",
+		"esModuleInterop": true,
+		"target": "ES2021",
+		"moduleResolution": "node",
+		"sourceMap": true,
+		"outDir": "./build",
+		"declaration": true,
+		"strict": true,
+		"strictBindCallApply": true,
+		"strictFunctionTypes": true,
+        "resolveJsonModule": true,
+		"strictNullChecks": false,
+	},
+	"lib": [
+		"ES2021"
+	],
+	"include": [
+		"src/**/*.ts"
+	],
+	"exclude": [
+		"node_modules"
+	]
+}
