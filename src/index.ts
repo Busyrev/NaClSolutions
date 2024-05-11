@@ -3,16 +3,15 @@ import { Cfg } from "./Cfg";
 import { setEnsureMonotonicSteps } from "./bruteForceMonotonic";
 import { MarkdownExporter } from "./MarkdownExporter";
 import { SolutionCalculationResult, calculateSolutionMassesByEC } from "./calculateSolutionMassesByEC";
+import { Solution09CalculationResult, calculateSolution09MassesByEC } from "./calculateSolution09MassesByEC";
 
 let cfg: Cfg;
-let saltSymbolsAfterPoint: number;
-let waterSymbolsAfterPoint: number;
+
 async function main() {
     console.log('Welcome to NaCl EC calibration Solution generator');
     cfg = eval(fs.readFileSync('cfg.js').toString());
     setEnsureMonotonicSteps(cfg.ensureMonotonicSteps);
-    saltSymbolsAfterPoint = getSymbolsAfterPoint(cfg.saltScalesDivisionValue);
-    waterSymbolsAfterPoint = getSymbolsAfterPoint(cfg.waterScalesDivisionValue);
+
 
     let markdown = fs.readFileSync('doc.md').toString();
 
@@ -22,6 +21,7 @@ async function main() {
         return evalResult;
     })
 
+    fs.writeFileSync('tmp/NaClSolutions.md', markdown);
     let html = await MarkdownExporter.export(markdown, true);
     fs.writeFileSync('tmp/NaClSolutions.html', html);
     let pdf = await MarkdownExporter.export(markdown, false);
@@ -32,18 +32,20 @@ async function main() {
 
 function getTable(ECs: Array<number>, minWaterGrams: number, maxWatergrams: number, printingAccuracyShift: number = 0) {
     let str = '';
-    let columns = ['EC', 'H2O(г)', 'NaCl(г)', 'Рассчетный EC', 'Диапазон EC', 'Диапазон EC%', '$\\rho$(г/л)', 'Отклонение EC', 'Объём раствора(мл)'];
+    let columns = ['**EC**', '**H2O(г)**', '**NaCl(г)**', 'Рассчетный EC', 'Диапазон EC', 'Диапазон EC%', '$\\rho$(г/л)', 'Отклонение EC', 'Объём раствора(мл)'];
     str += '| ' + columns.join(' | ') + '|\n';
     let dashes = columns.map(() => '---');
     str += '| ' + dashes.join(' | ') + '|\n';
+    let saltSymbolsAfterPoint = getSymbolsAfterPoint(cfg.saltScalesDivisionValue);
+    let waterSymbolsAfterPoint = getSymbolsAfterPoint(cfg.waterScalesDivisionValue);
     for (let EC of ECs) {
         let targetNumDigits = getSymbolsAfterPoint(EC);
         let res: SolutionCalculationResult = calculateSolutionMassesByEC(EC, minWaterGrams, maxWatergrams, cfg.waterScalesDivisionValue, cfg.saltScalesDivisionValue);
         let ecAccuracyPercentage = (res.ECAccuracy / EC * 100).toFixed(printingAccuracyShift + 2) + '%';
         str += '| ' + [
-            EC,
-            res.waterGrams.toFixed(waterSymbolsAfterPoint),
-            res.saltGrams.toFixed(saltSymbolsAfterPoint),
+            '**' + EC + '**',
+            '**' + res.waterGrams.toFixed(waterSymbolsAfterPoint) + '**',
+            '**' + res.saltGrams.toFixed(saltSymbolsAfterPoint) + '**',
             res.realEC.toFixed(printingAccuracyShift + targetNumDigits + 2),
             res.minEC.toFixed(printingAccuracyShift + targetNumDigits) + ' - ' + res.maxEC.toFixed(printingAccuracyShift + targetNumDigits),
             ecAccuracyPercentage,
@@ -55,31 +57,42 @@ function getTable(ECs: Array<number>, minWaterGrams: number, maxWatergrams: numb
     return str;
 }
 
-function getTablePharmacySolution(ECs: Array<number>, minWaterGrams: number, maxWatergrams: number, printingAccuracyShift: number = 0) {
+function getTableSolution09(ECs: Array<number>, minWaterGrams: number, maxWatergrams: number, waterScalesDivisionValue: number = undefined, saltScalesDivisionValue: number = undefined, printingAccuracyShift: number = 0, skipHeading: boolean = false) {
     let str = '';
-    let columns = ['EC', 'H2O(г)', 'NaCl 0.9%(г)', 'Рассчетный EC', 'Диапазон EC', 'Диапазон EC%', '$\\rho$(г/л)', 'Отклонение EC', 'Объём раствора(мл)'];
-    str += '| ' + columns.join(' | ') + '|\n';
-    let dashes = columns.map(() => '---');
-    str += '| ' + dashes.join(' | ') + '|\n';
+    if (!skipHeading) {
+        let columns = ['**EC**', '**H2O(г)**', '**NaCl 0.9%(г)**', 'Рассчетный EC', 'Диапазон EC', 'Диапазон EC%', '$\\rho$(г/л)', 'Отклонение EC', 'Объём раствора(мл)'];
+        str += '| ' + columns.join(' | ') + '|\n';
+        let dashes = columns.map(() => '---');
+        str += '| ' + dashes.join(' | ') + '|\n';
+    }
+    if (typeof waterScalesDivisionValue == "undefined") {
+        waterScalesDivisionValue = cfg.waterScalesDivisionValue;
+    }
+    if (typeof saltScalesDivisionValue == "undefined") {
+        saltScalesDivisionValue = cfg.saltScalesDivisionValue;
+    }
+    let saltSymbolsAfterPoint = getSymbolsAfterPoint(saltScalesDivisionValue);
+    let waterSymbolsAfterPoint = getSymbolsAfterPoint(waterScalesDivisionValue);
+    let strings: Array<string> = [];
     for (let EC of ECs) {
         let targetNumDigits = getSymbolsAfterPoint(EC);
-        let res: SolutionCalculationResult = calculateSolutionMassesByEC(EC, minWaterGrams, maxWatergrams, cfg.waterScalesDivisionValue, cfg.saltScalesDivisionValue);
+        let res: Solution09CalculationResult = calculateSolution09MassesByEC(EC, minWaterGrams, maxWatergrams, waterScalesDivisionValue, saltScalesDivisionValue);
         let ecAccuracyPercentage = (res.ECAccuracy / EC * 100).toFixed(printingAccuracyShift + 2) + '%';
-        str += '| ' + [
-            EC,
-            res.waterGrams.toFixed(waterSymbolsAfterPoint),
-            res.saltGrams.toFixed(saltSymbolsAfterPoint),
+        strings.push('| ' + [
+            '**' + EC + '**',
+            '**' + res.waterGrams.toFixed(waterSymbolsAfterPoint) + '**',
+            '**' + res.solution09Grams.toFixed(saltSymbolsAfterPoint) + '**',
             res.realEC.toFixed(printingAccuracyShift + targetNumDigits + 2),
             res.minEC.toFixed(printingAccuracyShift + targetNumDigits) + ' - ' + res.maxEC.toFixed(printingAccuracyShift + targetNumDigits),
             ecAccuracyPercentage,
             res.rho.toFixed(printingAccuracyShift + targetNumDigits + 2),
             res.ECError.toExponential(printingAccuracyShift + 2),
             res.volume.toFixed(waterSymbolsAfterPoint + 2),
-        ].join(' | ') + '|\n';
+        ].join(' | ') + '|');
     }
+    str += strings.join('\n');
     return str;
 }
-
 
 function formatDate(date: Date) {
     var d = new Date(date),
@@ -113,5 +126,3 @@ function getArray(from: number, to: number) {
 }
 
 main();
-
-

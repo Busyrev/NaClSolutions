@@ -36,11 +36,11 @@ export function calculateSolutionMassesByEC(EC: number, minWaterGrams: number, m
     };
     for (let waterGrams = minWaterGrams; waterGrams <= maxWatergrams; waterGrams += waterStep) {
         waterGrams = Math.round(waterGrams / waterStep) * waterStep;
-        let saltGrams = bruteForceMonotonic((saltGrams: number) => {
+        let calculatedSaltGrams = bruteForceMonotonic((saltGrams: number) => {
             let realRho = getRhoByDencitySaltAndWaterGrams(dencity, saltGrams, waterGrams);
             return realRho;
         }, rho, saltStep, 1000, 0.000001);
-        let saltGramsRounded = Math.round(saltGrams / saltStep) * saltStep;
+        let saltGramsRounded = Math.round(calculatedSaltGrams / saltStep) * saltStep;
         let saltFrom = saltGramsRounded - 2 * saltStep;
         let saltTo = saltGramsRounded + 2 * saltStep;
         for (let saltGrams = saltFrom; saltGrams <= saltTo; saltGrams += saltStep) {

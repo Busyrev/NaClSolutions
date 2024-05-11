@@ -7,20 +7,6 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Jest run current file",
-            "program": "${workspaceRoot}/node_modules/jest-cli/bin/jest.js",
-            "args": [
-                "${fileBasename}",
-                "--verbose",
-                "-i",
-                "--no-cache"
-            ],
-            "console": "integratedTerminal",
-            "internalConsoleOptions": "neverOpen"
-        },
-        {
-            "type": "node",
-            "request": "launch",
             "name": "Jest run all",
             "program": "${workspaceRoot}/node_modules/jest-cli/bin/jest.js",
             "args": [
@@ -28,7 +14,7 @@
                 "-i",
                 "--no-cache"
             ],
-            "console": "integratedTerminal",
+            // "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen"
         },
         {

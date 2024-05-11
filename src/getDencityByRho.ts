@@ -22,8 +22,8 @@ let rhoToDencity: Array<[number, number]> = [
 
 /**
  * 
- * @param rho 
- * @returns грамм раствора на литр раствора
+ * @param rho грам соли на литр раствора
+ * @returns Плотность: грамм раствора на литр раствора
  */
 export function getDencityByRho(rho: number): number {
     let less: [number, number];

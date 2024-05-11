@@ -4,6 +4,8 @@ import { getRhoByEC } from "../src/getRhoByEC";
 import { getRhoByDencitySaltAndWaterGrams } from "../src/getRhoByDencitySaltAndWaterGrams";
 import { bruteForceMonotonic } from "../src/bruteForceMonotonic";
 import { pureWaterDencity } from "../src/pureWaterDencity";
+import { getSaltGramsByRho } from "../src/getSaltGramsByRho";
+import { Solution09CalculationResult, calculateSolution09MassesByEC } from "../src/calculateSolution09MassesByEC";
 
 test("getDencityForRho", () => {
     expect(getDencityByRho(0.4904),).toBeCloseTo(998.5356178, 6);
@@ -24,18 +26,35 @@ test("getECForSolution", () => {
 });
 
 test("PharmacySolution", () => {
-    let originalSaltGrams = 9;
-    let liters = 1;
-    let rho = originalSaltGrams; // 0.9% 1 мл препарата содержит: натрия хлорид - 9 мг.
+    let rho = 9; // 0.9% 1 мл препарата содержит: натрия хлорид - 9 мг.
+    let liters = 10;
+    let originalSaltGrams = rho * liters;
     let dencity = getDencityByRho(rho);
     let solutionMass = dencity * liters;
     let waterGrams = solutionMass - originalSaltGrams;
     let saltGrams = bruteForceMonotonic((saltGrams: number) => {
         let realRho = getRhoByDencitySaltAndWaterGrams(dencity, saltGrams, waterGrams);
         return realRho;
-    }, rho, 0.0001, 1000, 1e-7);
+    }, rho, 0.0001, 1000, 1e-7 / liters);
     let EC = getECbyRho(rho);
-    expect(saltGrams).toBeCloseTo(rho, 6);
+    expect(saltGrams).toBeCloseTo(rho * liters, 6);
     expect(EC).toBeCloseTo(16.3500511, 6);
+});
+
+test("gramOfSaltIn09Solution", () => {
+    let liters = 7;
+    let rho = 9;
+    let dencity = getDencityByRho(rho);
+    let solutionMass = dencity * liters; // грамм
+    expect(getSaltGramsByRho(solutionMass, rho)).toBeCloseTo(rho * liters, 6);
+});
+
+test("calculate09SolutionMassesByEC-1-413", ()=>{
+    let res: Solution09CalculationResult = calculateSolution09MassesByEC(1.413, 960, 1000, 1, 0.01);
+    console.log('qq');
+});
+
+test("calculate09SolutionMassesByEC-12-88", ()=>{
+    let res: Solution09CalculationResult = calculateSolution09MassesByEC(12.88, 500, 1000, 1, 0.01);
 });
 

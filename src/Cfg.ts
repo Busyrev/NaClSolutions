@@ -1,6 +1,7 @@
 export class Cfg {
-    version:number;
+    version:string;
     ensureMonotonicSteps?: number;
     saltScalesDivisionValue: number;
+    salt09SolutionScalesDivisionValue: number;
     waterScalesDivisionValue: number;
 }
