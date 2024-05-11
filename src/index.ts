@@ -2,7 +2,7 @@ import fs from "fs";
 import { Cfg } from "./Cfg";
 import { setEnsureMonotonicSteps } from "./bruteForceMonotonic";
 import { MarkdownExporter } from "./MarkdownExporter";
-import { SolutionCalculationResult, calulateSolutionMassesByEC } from "./calulateSolutionMassesByEC";
+import { SolutionCalculationResult, calculateSolutionMassesByEC } from "./calculateSolutionMassesByEC";
 
 let cfg: Cfg;
 let saltSymbolsAfterPoint: number;
@@ -26,6 +26,8 @@ async function main() {
     fs.writeFileSync('tmp/NaClSolutions.html', html);
     let pdf = await MarkdownExporter.export(markdown, false);
     fs.writeFileSync('NaClSolutions.pdf', pdf);
+
+    console.log("Done");
 }
 
 function getTable(ECs: Array<number>, minWaterGrams: number, maxWatergrams: number, printingAccuracyShift: number = 0) {
@@ -36,7 +38,7 @@ function getTable(ECs: Array<number>, minWaterGrams: number, maxWatergrams: numb
     str += '| ' + dashes.join(' | ') + '|\n';
     for (let EC of ECs) {
         let targetNumDigits = getSymbolsAfterPoint(EC);
-        let res: SolutionCalculationResult = calulateSolutionMassesByEC(EC, minWaterGrams, maxWatergrams, cfg.waterScalesDivisionValue, cfg.saltScalesDivisionValue);
+        let res: SolutionCalculationResult = calculateSolutionMassesByEC(EC, minWaterGrams, maxWatergrams, cfg.waterScalesDivisionValue, cfg.saltScalesDivisionValue);
         let ecAccuracyPercentage = (res.ECAccuracy / EC * 100).toFixed(printingAccuracyShift + 2) + '%';
         str += '| ' + [
             EC,
@@ -52,6 +54,32 @@ function getTable(ECs: Array<number>, minWaterGrams: number, maxWatergrams: numb
     }
     return str;
 }
+
+function getTablePharmacySolution(ECs: Array<number>, minWaterGrams: number, maxWatergrams: number, printingAccuracyShift: number = 0) {
+    let str = '';
+    let columns = ['EC', 'H2O(г)', 'NaCl 0.9%(г)', 'Рассчетный EC', 'Диапазон EC', 'Диапазон EC%', '$\\rho$(г/л)', 'Отклонение EC', 'Объём раствора(мл)'];
+    str += '| ' + columns.join(' | ') + '|\n';
+    let dashes = columns.map(() => '---');
+    str += '| ' + dashes.join(' | ') + '|\n';
+    for (let EC of ECs) {
+        let targetNumDigits = getSymbolsAfterPoint(EC);
+        let res: SolutionCalculationResult = calculateSolutionMassesByEC(EC, minWaterGrams, maxWatergrams, cfg.waterScalesDivisionValue, cfg.saltScalesDivisionValue);
+        let ecAccuracyPercentage = (res.ECAccuracy / EC * 100).toFixed(printingAccuracyShift + 2) + '%';
+        str += '| ' + [
+            EC,
+            res.waterGrams.toFixed(waterSymbolsAfterPoint),
+            res.saltGrams.toFixed(saltSymbolsAfterPoint),
+            res.realEC.toFixed(printingAccuracyShift + targetNumDigits + 2),
+            res.minEC.toFixed(printingAccuracyShift + targetNumDigits) + ' - ' + res.maxEC.toFixed(printingAccuracyShift + targetNumDigits),
+            ecAccuracyPercentage,
+            res.rho.toFixed(printingAccuracyShift + targetNumDigits + 2),
+            res.ECError.toExponential(printingAccuracyShift + 2),
+            res.volume.toFixed(waterSymbolsAfterPoint + 2),
+        ].join(' | ') + '|\n';
+    }
+    return str;
+}
+
 
 function formatDate(date: Date) {
     var d = new Date(date),

@@ -18,7 +18,7 @@ export class SolutionCalculationResult {
     public volume: number;
 }
 
-export function calulateSolutionMassesByEC(EC: number, minWaterGrams: number, maxWatergrams: number, waterStep: number, saltStep: number): SolutionCalculationResult {
+export function calculateSolutionMassesByEC(EC: number, minWaterGrams: number, maxWatergrams: number, waterStep: number, saltStep: number): SolutionCalculationResult {
     let rho = getRhoByEC(EC);
     let dencity = getDencityByRho(rho);
     let bestCandidate: SolutionCalculationResult = {
