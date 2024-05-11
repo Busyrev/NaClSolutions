@@ -14,7 +14,7 @@
                 "-i",
                 "--no-cache"
             ],
-            // "console": "integratedTerminal",
+            "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen"
         },
         {
