@@ -1,6 +1,7 @@
-
-/*
-rho is grams of salt per 1 liter of solution! Not per 1 liter of water!
+/**
+ * 
+ * @param rho грам соли на литр раствора
+ * @returns EC, мСм/см, миллисименс на сантиметр
  */
 export function getECbyRho(rho: number): number {
     let EW = 58.44;

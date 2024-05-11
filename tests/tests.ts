@@ -2,6 +2,8 @@ import { getDencityByRho } from "../src/getDencityByRho";
 import { getECbyRho } from "../src/getECbyRho";
 import { getRhoByEC } from "../src/getRhoByEC";
 import { getRhoByDencitySaltAndWaterGrams } from "../src/getRhoByDencitySaltAndWaterGrams";
+import { bruteForceMonotonic } from "../src/bruteForceMonotonic";
+import { pureWaterDencity } from "../src/pureWaterDencity";
 
 test("getDencityForRho", () => {
     expect(getDencityByRho(0.4904),).toBeCloseTo(998.5356178, 6);
@@ -21,11 +23,19 @@ test("getECForSolution", () => {
     expect(getRhoByEC(111.8)).toBeCloseTo(51.80772436, 6);
 });
 
-test("Accuracy", ()=> {
-    let rho = getRhoByEC(1.413);
+test("PharmacySolution", () => {
+    let originalSaltGrams = 9;
+    let liters = 1;
+    let rho = originalSaltGrams; // 0.9% 1 мл препарата содержит: натрия хлорид - 9 мг.
     let dencity = getDencityByRho(rho);
-    let lowEC = getECbyRho(getRhoByDencitySaltAndWaterGrams(dencity, 0.495, 713.5));
-    let highEC = getECbyRho(getRhoByDencitySaltAndWaterGrams(dencity, 0.505, 712.5));
-    console.log(lowEC, highEC);
-
+    let solutionMass = dencity * liters;
+    let waterGrams = solutionMass - originalSaltGrams;
+    let saltGrams = bruteForceMonotonic((saltGrams: number) => {
+        let realRho = getRhoByDencitySaltAndWaterGrams(dencity, saltGrams, waterGrams);
+        return realRho;
+    }, rho, 0.0001, 1000, 1e-7);
+    let EC = getECbyRho(rho);
+    expect(saltGrams).toBeCloseTo(rho, 6);
+    expect(EC).toBeCloseTo(16.3500511, 6);
 });
+
