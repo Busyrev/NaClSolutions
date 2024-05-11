@@ -109,7 +109,7 @@ js: getTable([1.413, 12.88, 111.8], 1000, 4000);\js
 
 ## Источники
 1. https://t.me/ponics_ru/1/157994 формула EC от грамм соли на литр раствора	
-2. https://t.me/ponics_doc/47 "Conductance Data For Commonly Used Chemicals, December 2010" - источник формулы
+2. https://t.me/ponics_doc/47 "Conductance Data For Commonly Used Chemicals, December 2010" - источник формулы, стр. 24, коэффициенты стр. 26
 3. https://files.stroyinf.ru/Data2/1/4293783/4293783232.htm	плотность воды ГСССД 2-77
 4. https://russsam.ru/certificates/246-Tablitsa_plotnosti_rastvorov_khlorida_natriya плотность соляного раствора "Краткий химический справочник" 1978
 
